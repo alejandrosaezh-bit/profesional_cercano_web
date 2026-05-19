@@ -3,6 +3,28 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
+const IconRenderer = ({ name }: { name: string }) => {
+  const baseClass = "w-7 h-7";
+  switch(name?.toLowerCase()) {
+    case 'home':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
+    case 'car':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>; // Tool/Engine icon as fallback
+    case 'heart':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>;
+    case 'monitor':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
+    case 'diamond-stone':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
+    case 'calendar':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
+    case 'cat':
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>; // Smile face as fallback for pets
+    default:
+      return <svg className={baseClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
+  }
+};
+
 export default function Home() {
   const [categories, setCategories] = useState<any[]>([]);
   
@@ -155,8 +177,8 @@ export default function Home() {
                   onClick={() => openWizard(cat)}
                   className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center gap-3 group"
                 >
-                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl group-hover:bg-primary group-hover:text-white transition-colors">
-                    {cat.icon || "🔧"}
+                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                    <IconRenderer name={cat.icon} />
                   </div>
                   <span className="font-semibold text-gray-800">{cat.name}</span>
                 </button>
@@ -223,7 +245,7 @@ export default function Home() {
                       onClick={() => { setSelectedCategory(cat); setRequestStep(2); }}
                       className="p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 text-left font-semibold text-gray-800 transition-all flex items-center gap-3"
                     >
-                      <span>{cat.icon || "🔧"}</span> {cat.name}
+                      <span className="w-8 h-8 flex items-center justify-center text-primary"><IconRenderer name={cat.icon} /></span> {cat.name}
                     </button>
                   ))}
                 </div>
