@@ -6,19 +6,39 @@ import Image from "next/image";
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [description, setDescription] = useState("");
+  
+  const [proName, setProName] = useState("");
+  const [proEmail, setProEmail] = useState("");
+  const [proPhone, setProPhone] = useState("");
+  const [proSpecialty, setProSpecialty] = useState("");
+
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
   const [requestStatus, setRequestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [proStatus, setProStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  // Reemplazar con URL de prod (ej: https://api.profesionalcercano.com/api)
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
   const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRequestStatus("loading");
     try {
-      // Replace with actual endpoint
-      const res = await fetch("http://localhost:5000/api/jobs/web-request", {
+      const res = await fetch(`${API_URL}/web-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category: searchQuery, location }),
+        body: JSON.stringify({ 
+          category: searchQuery, 
+          location, 
+          description, 
+          name: clientName, 
+          email: clientEmail, 
+          phone: clientPhone 
+        }),
       });
       if (!res.ok) throw new Error("Error en la solicitud");
       setRequestStatus("success");
@@ -34,9 +54,28 @@ export default function Home() {
 
   const handleProRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simplified B2B registration simulation
-    alert("Redirigiendo al portal de profesionales...");
-    setShowProModal(false);
+    setProStatus("loading");
+    try {
+      const res = await fetch(`${API_URL}/web-register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          name: proName, 
+          email: proEmail, 
+          phone: proPhone, 
+          specialty: proSpecialty 
+        }),
+      });
+      if (!res.ok) throw new Error("Error en registro B2B");
+      setProStatus("success");
+      setTimeout(() => {
+        setShowProModal(false);
+        setProStatus("idle");
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      setProStatus("error");
+    }
   };
 
   return (
@@ -228,13 +267,27 @@ export default function Home() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">¿Qué necesitas?</label>
                 <input required type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Ej. Reparar tubería..." />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
+                  <input required type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Tu nombre" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Teléfono</label>
+                  <input required type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Ej. 600123456" />
+                </div>
+              </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Ubicación</label>
-                <input required type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Ej. Madrid Centro" />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+                <input required type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="correo@ejemplo.com" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Ubicación exacta</label>
+                <input required type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Ej. Calle Mayor 1, Madrid" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción detallada</label>
-                <textarea required rows={3} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Describe el problema o proyecto..." />
+                <textarea required rows={3} value={description} onChange={e => setDescription(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" placeholder="Describe el problema o proyecto..." />
               </div>
               
               <button 
@@ -275,23 +328,36 @@ export default function Home() {
             <form onSubmit={handleProRegister} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo / Empresa</label>
-                <input required type="text" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
+                <input required type="text" value={proName} onChange={e => setProName(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
-                <input required type="email" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
+                <input required type="email" value={proEmail} onChange={e => setProEmail(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Especialidad Principal</label>
-                <input required type="text" placeholder="Ej. Electricista, Plomero..." className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Teléfono</label>
+                  <input required type="tel" value={proPhone} onChange={e => setProPhone(e.target.value)} className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Especialidad</label>
+                  <input required type="text" value={proSpecialty} onChange={e => setProSpecialty(e.target.value)} placeholder="Ej. Electricista" className="w-full p-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none" />
+                </div>
               </div>
               
               <button 
                 type="submit" 
-                className="w-full bg-secondary hover:bg-secondary-hover text-white py-4 rounded-xl font-bold transition-colors mt-4"
+                disabled={proStatus === 'loading'}
+                className="w-full bg-secondary hover:bg-secondary-hover text-white py-4 rounded-xl font-bold transition-colors mt-4 disabled:opacity-70 flex items-center justify-center"
               >
-                Comenzar Registro
+                {proStatus === 'loading' ? 'Enviando...' : 'Comenzar Registro'}
               </button>
+
+              {proStatus === 'success' && (
+                <div className="p-4 bg-green-50 text-green-700 rounded-xl mt-4 text-center font-medium">
+                  ¡Registro exitoso! Revisa tu correo o espera que un admin te contacte.
+                </div>
+              )}
             </form>
           </div>
         </div>
