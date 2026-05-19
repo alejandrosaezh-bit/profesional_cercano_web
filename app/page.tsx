@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Home() {
@@ -20,9 +20,20 @@ export default function Home() {
   const [showProModal, setShowProModal] = useState(false);
   const [requestStatus, setRequestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [proStatus, setProStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [categories, setCategories] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Reemplazar con URL de prod (ej: https://api.profesionalcercano.com/api)
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+  useEffect(() => {
+    fetch(`${API_URL}/categories`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setCategories(data);
+      })
+      .catch(err => console.error("Error cargando categorias:", err));
+  }, [API_URL]);
 
   const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,8 +145,37 @@ export default function Home() {
                   className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-gray-900" 
                   placeholder="¿Qué servicio buscas? (Ej. Fontanero)" 
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 />
+                
+                {/* DROPDOWN */}
+                {showDropdown && categories.length > 0 && (
+                  <div className="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 max-h-60 overflow-y-auto left-0 text-left">
+                    {categories
+                      .filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .map((cat, idx) => (
+                        <div 
+                          key={idx}
+                          className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-gray-800 border-b border-gray-50 last:border-0 transition-colors flex items-center gap-2"
+                          onClick={() => {
+                            setSearchQuery(cat.name);
+                            setShowDropdown(false);
+                          }}
+                        >
+                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                          {cat.name}
+                        </div>
+                      ))}
+                    {categories.filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                        <div className="px-4 py-3 text-gray-500 italic text-sm">No hay categorías exactas. Escribe tu problema y lo asignaremos manualmente.</div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex-1 relative">
                 <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
