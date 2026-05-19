@@ -23,8 +23,8 @@ export default function Home() {
   const [categories, setCategories] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Reemplazar con URL de prod (ej: https://api.profesionalcercano.com/api)
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  // Conexión directa al servidor de Render (para no tener que configurar Vercel)
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://profix-backend-h56b.onrender.com/api";
 
   useEffect(() => {
     fetch(`${API_URL}/categories`)
