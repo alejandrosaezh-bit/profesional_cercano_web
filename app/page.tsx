@@ -73,9 +73,10 @@ export default function Home() {
   }, [API_URL]);
 
   useEffect(() => {
+    const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
+    let allSubs: any[] = [];
+    
     if (categories.length > 0) {
-      const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
-      const allSubs: any[] = [];
       categories.forEach(c => {
         if (c.subcategories) {
           c.subcategories.forEach((sub: any) => {
@@ -83,17 +84,27 @@ export default function Home() {
           });
         }
       });
-      if (allSubs.length > 0) {
-        const generated = Array.from({length: 12}).map((_, i) => {
-          const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
-          const randomName = names[Math.floor(Math.random() * names.length)];
-          const top = 10 + Math.random() * 70; 
-          const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
-          const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
-          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
-        });
-        setMapAvatars(generated);
-      }
+    } else {
+      // Fallback para generar avatares visuales en dispositivos móviles si falla la API por CORS
+      allSubs = [
+        { name: "Plomería", icon: "Wrench" },
+        { name: "Electricidad", icon: "Zap" },
+        { name: "Limpieza", icon: "Sparkles" },
+        { name: "Carpintería", icon: "Hammer" },
+        { name: "Pintura", icon: "Paintbrush" }
+      ];
+    }
+
+    if (allSubs.length > 0) {
+      const generated = Array.from({length: 12}).map((_, i) => {
+        const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
+        const randomName = names[Math.floor(Math.random() * names.length)];
+        const top = 10 + Math.random() * 70; 
+        const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
+        const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
+        return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
+      });
+      setMapAvatars(generated);
     }
   }, [categories]);
 
