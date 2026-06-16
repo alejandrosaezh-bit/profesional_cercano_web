@@ -230,7 +230,7 @@ export default function Home() {
                 </html>
               `}
               className="w-full h-full object-cover"
-              style={{ filter: "saturate(1.1)" }}
+              style={{ filter: "contrast(1.25) saturate(1.5) brightness(0.95)" }}
             />
           ) : (
             <div className="w-full h-full bg-[#eef2f6]" />
