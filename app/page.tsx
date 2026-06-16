@@ -89,7 +89,8 @@ export default function Home() {
           const randomName = names[Math.floor(Math.random() * names.length)];
           const top = 15 + Math.random() * 60; 
           const left = i % 2 === 0 ? (5 + Math.random() * 20) : (65 + Math.random() * 25);
-          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%` };
+          const radius = 100 + Math.random() * 150; // Random radius between 100px and 250px
+          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
         });
         setMapAvatars(generated);
       }
@@ -228,7 +229,21 @@ export default function Home() {
         {/* Floating Avatars */}
         {mapAvatars.map((av) => (
           <div key={av.id} className="absolute z-10 hidden md:flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
-            <div className="w-16 h-16 rounded-full border-4 border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden bg-white mb-2 relative group hover:scale-110 transition-transform cursor-pointer hover:border-[#EA580C]">
+            
+            {/* Coverage Ring */}
+            <div 
+              className="absolute bg-[#EA580C]/5 border-2 border-[#EA580C]/20 rounded-full animate-pulse z-0 pointer-events-none" 
+              style={{ 
+                width: `${av.radius}px`, 
+                height: `${av.radius}px`, 
+                top: '2rem', // Center roughly on the avatar image
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                animationDuration: `${3 + Math.random() * 2}s` 
+              }} 
+            />
+
+            <div className="w-16 h-16 rounded-full border-4 border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden bg-white mb-2 relative group hover:scale-110 transition-transform cursor-pointer hover:border-[#EA580C] z-10">
               <img src={`https://ui-avatars.com/api/?name=${av.name}&background=random&color=fff&bold=true`} alt={av.name} className="w-full h-full object-cover" />
               <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                 <LucideIcons.Check className="w-3 h-3 text-white" />
