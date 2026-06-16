@@ -18,8 +18,8 @@ export default function Home() {
   // States de UI
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
   const [isScrolled, setIsScrolled] = useState(false);
-  const [userCity, setUserCity] = useState("Caracas");
-  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>({ lat: 10.4806, lon: -66.9036 });
+  const [userCity, setUserCity] = useState<string>("Tu Ciudad");
+  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>(null);
   const [mapAvatars, setMapAvatars] = useState<any[]>([]);
   
   // Data de la solicitud
@@ -73,10 +73,9 @@ export default function Home() {
   }, [API_URL]);
 
   useEffect(() => {
-    const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
-    let allSubs: any[] = [];
-    
     if (categories.length > 0) {
+      const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
+      const allSubs: any[] = [];
       categories.forEach(c => {
         if (c.subcategories) {
           c.subcategories.forEach((sub: any) => {
@@ -84,27 +83,17 @@ export default function Home() {
           });
         }
       });
-    } else {
-      // Fallback para generar avatares visuales en dispositivos móviles si falla la API por CORS
-      allSubs = [
-        { name: "Plomería", icon: "Wrench" },
-        { name: "Electricidad", icon: "Zap" },
-        { name: "Limpieza", icon: "Sparkles" },
-        { name: "Carpintería", icon: "Hammer" },
-        { name: "Pintura", icon: "Paintbrush" }
-      ];
-    }
-
-    if (allSubs.length > 0) {
-      const generated = Array.from({length: 12}).map((_, i) => {
-        const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const top = 10 + Math.random() * 80; 
-        const left = i % 2 === 0 ? (2 + Math.random() * 10) : (85 + Math.random() * 10);
-        const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
-        return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
-      });
-      setMapAvatars(generated);
+      if (allSubs.length > 0) {
+        const generated = Array.from({length: 12}).map((_, i) => {
+          const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
+          const randomName = names[Math.floor(Math.random() * names.length)];
+          const top = 10 + Math.random() * 70; 
+          const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
+          const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
+          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
+        });
+        setMapAvatars(generated);
+      }
     }
   }, [categories]);
 
@@ -254,7 +243,7 @@ export default function Home() {
 
         {/* Floating Avatars */}
         {mapAvatars.map((av) => (
-          <div key={av.id} className="absolute z-30 flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
+          <div key={av.id} className="absolute z-10 hidden md:flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
             
             {/* Coverage Ring */}
             <div 
@@ -298,30 +287,22 @@ export default function Home() {
 
         {/* WIZARD FORM */}
         <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-full bg-[#EA580C]/10 flex items-center justify-center">
-              <LucideIcons.Zap className="w-5 h-5 text-[#EA580C]" />
-            </div>
-            <h2 className="text-[22px] font-bold text-gray-900">Soluciona tu problema</h2>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-[28px] font-extrabold text-gray-900 tracking-tight leading-tight">¿Qué servicio buscas hoy?</h2>
           </div>
 
           <div className="space-y-6">
             {/* TIPO DE SERVICIO */}
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Tipo de servicio</label>
+              <label className="block text-base font-bold text-gray-900 mb-2">Tipo de servicio</label>
               <button 
                 onClick={() => setActiveModal("category")}
-                className="w-full h-14 px-4 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl flex items-center justify-between bg-blue-50/30 shadow-sm text-left focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all cursor-pointer group"
+                className="w-full h-14 px-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl flex items-center justify-between bg-white text-left focus:border-[#2563EB] transition-all cursor-pointer group"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#2563EB]/10 flex items-center justify-center group-hover:bg-[#2563EB]/20 transition-colors">
-                    <LucideIcons.Briefcase className="w-4 h-4 text-[#2563EB]" />
-                  </div>
-                  <span className={selectedSubcategory ? "text-gray-900 font-bold" : "text-[#2563EB] font-bold"}>
-                    {selectedSubcategory ? `${selectedCategory?.name} > ${selectedSubcategory.name || selectedSubcategory}` : "Haz clic aquí para elegir tu servicio"}
-                  </span>
-                </div>
-                <LucideIcons.ChevronDown className="w-5 h-5 text-[#2563EB]" />
+                <span className={selectedSubcategory ? "text-gray-900 font-semibold text-lg" : "text-gray-400 font-semibold text-lg"}>
+                  {selectedSubcategory ? `${selectedCategory?.name} > ${selectedSubcategory.name || selectedSubcategory}` : "Seleccione..."}
+                </span>
+                <LucideIcons.ChevronDown className="w-5 h-5 text-[#EA580C]" />
               </button>
             </div>
 
@@ -354,21 +335,16 @@ export default function Home() {
 
             {/* UBICACION */}
             <div>
-              <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide flex items-center justify-between">
-                Ubicación
-                <span className="text-xs font-normal text-gray-400 normal-case">Solo detectaremos municipio</span>
-              </label>
+              <label className="block text-base font-bold text-gray-900 mb-1">¿Dónde necesitas el servicio?</label>
+              <p className="text-sm text-gray-500 mb-3">Solo detectaremos tu municipio.</p>
               <div className="flex gap-3 group">
                 <div className="flex-1 relative">
-                  <div className="absolute left-4 top-0 bottom-0 flex items-center justify-center pointer-events-none">
-                    <LucideIcons.MapPin className="w-5 h-5 text-[#2563EB]" />
-                  </div>
                   <input 
                     type="text" 
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full h-14 pl-12 pr-4 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl bg-blue-50/30 shadow-sm font-bold text-[#2563EB] placeholder:text-[#2563EB]/60 placeholder:font-bold focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
-                    placeholder="Haz clic para escribir tu ciudad..." 
+                    className="w-full h-14 px-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl bg-white font-semibold text-gray-900 placeholder:text-gray-400 text-lg focus:border-[#2563EB] outline-none transition-all" 
+                    placeholder="Ej: Chacao, Hatillo..." 
                   />
                 </div>
                 <button 
@@ -378,9 +354,9 @@ export default function Home() {
                     }
                   }}
                   title="Usar mi ubicación actual"
-                  className="w-14 h-14 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl flex items-center justify-center bg-[#2563EB] shadow-[0_4px_10px_rgb(37,99,235,0.3)] hover:bg-[#1d4ed8] hover:-translate-y-0.5 transition-all"
+                  className="w-14 h-14 border-2 border-gray-300 rounded-2xl flex items-center justify-center bg-white hover:bg-gray-50 transition-all shadow-sm"
                 >
-                  <LucideIcons.LocateFixed className="w-6 h-6 text-white" />
+                  <LucideIcons.MapPin className="w-6 h-6 text-red-500 fill-red-500" />
                 </button>
               </div>
             </div>
@@ -388,15 +364,16 @@ export default function Home() {
             {/* MULTIMEDIA */}
             {selectedSubcategory && (
               <div className="animate-in fade-in duration-300">
-                <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Multimedia <span className="text-gray-400 text-xs font-normal normal-case">(Opcional)</span></label>
+                <label className="block text-base font-bold text-gray-900 mb-1">Complementa con una imagen o Vídeo</label>
+                <p className="text-[13px] text-gray-500 italic mb-4">*Añadir multimedia ayuda a recibir mejores presupuestos.</p>
                 <div className="grid grid-cols-3 gap-3">
                   <button className="h-12 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center gap-2 text-gray-700 font-semibold text-sm hover:bg-gray-100 transition-colors">
                     <LucideIcons.FilePlus className="w-4 h-4" /> Archivo
                   </button>
-                  <button className="h-12 bg-[#2563EB]/5 border border-[#2563EB]/20 rounded-xl flex items-center justify-center gap-2 text-[#2563EB] font-semibold text-sm hover:bg-[#2563EB]/10 transition-colors">
+                  <button className="h-12 bg-blue-50/50 border border-blue-100 rounded-xl flex items-center justify-center gap-2 text-[#2563EB] font-semibold text-sm hover:bg-blue-50 transition-colors">
                     <LucideIcons.Camera className="w-4 h-4" /> Foto
                   </button>
-                  <button className="h-12 bg-[#EA580C]/5 border border-[#EA580C]/20 rounded-xl flex items-center justify-center gap-2 text-[#EA580C] font-semibold text-sm hover:bg-[#EA580C]/10 transition-colors">
+                  <button className="h-12 bg-red-50/50 border border-red-100 rounded-xl flex items-center justify-center gap-2 text-red-500 font-semibold text-sm hover:bg-red-50 transition-colors">
                     <LucideIcons.PlayCircle className="w-4 h-4" /> Vídeo
                   </button>
                 </div>
@@ -406,9 +383,9 @@ export default function Home() {
             <button 
               onClick={() => handleRequestSubmit()}
               disabled={!isFormValid}
-              className={`w-full h-14 rounded-2xl font-bold text-lg mt-6 transition-all duration-300 ${isFormValid ? 'bg-[#2563EB] text-white hover:bg-[#1d4ed8] shadow-[0_8px_20px_rgb(37,99,235,0.3)] hover:-translate-y-1' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+              className={`w-full h-14 rounded-2xl font-bold text-lg mt-6 transition-all duration-300 ${isFormValid ? 'bg-slate-400 text-white hover:bg-slate-500 shadow-md hover:-translate-y-1' : 'bg-slate-300 text-white opacity-80 cursor-not-allowed'}`}
             >
-              Solicitar Presupuestos
+              Encontrar ayuda
             </button>
           </div>
         </div>
