@@ -18,6 +18,9 @@ export default function Home() {
   // States de UI
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userCity, setUserCity] = useState<string>("Tu Ciudad");
+  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>(null);
+  const [mapAvatars, setMapAvatars] = useState<any[]>([]);
   
   // Data de la solicitud
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
@@ -49,12 +52,49 @@ export default function Home() {
       })
       .catch(err => console.error("Error cargando categorias:", err));
 
+    fetch("https://ipinfo.io/json")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.city) setUserCity(data.city);
+        if (data && data.loc) {
+          const [lat, lon] = data.loc.split(",");
+          setUserLocation({ lat: parseFloat(lat), lon: parseFloat(lon) });
+        }
+      })
+      .catch(() => {
+        // Fallback silencioso en caso de que un AdBlocker bloquee la API
+      });
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [API_URL]);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
+      const allSubs: any[] = [];
+      categories.forEach(c => {
+        if (c.subcategories) {
+          c.subcategories.forEach((sub: any) => {
+            allSubs.push({ name: sub.name, icon: sub.icon || c.icon });
+          });
+        }
+      });
+      if (allSubs.length > 0) {
+        const generated = Array.from({length: 6}).map((_, i) => {
+          const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
+          const randomName = names[Math.floor(Math.random() * names.length)];
+          const top = 15 + Math.random() * 60; 
+          const left = i % 2 === 0 ? (5 + Math.random() * 20) : (65 + Math.random() * 25);
+          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%` };
+        });
+        setMapAvatars(generated);
+      }
+    }
+  }, [categories]);
 
   const handleRequestSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -137,26 +177,23 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src="/Logo_Perfil.png" alt="Logo" className="w-10 h-10 object-contain rounded-xl shadow-sm" onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=PC&background=2563EB&color=fff&rounded=true' }} />
+            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-xl shadow-sm bg-white p-0.5" onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=PC&background=2563EB&color=fff&rounded=true' }} />
             <span className="text-xl font-extrabold tracking-tight">
               <span className="text-[#2563EB]">Profesional</span> <span className="text-[#EA580C]">Cercano</span>
             </span>
           </div>
 
           {/* Nav Links Desktop */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6">
             <a href="#como-funciona" className="text-gray-600 hover:text-[#2563EB] font-medium transition-colors">¿Cómo funciona?</a>
-            <div className="flex items-center gap-4">
-              <button className="text-gray-600 hover:text-[#2563EB] font-medium transition-colors">
-                Iniciar Sesión
-              </button>
-              <button 
-                onClick={() => setActiveModal("proAuth")} 
-                className="bg-[#EA580C] hover:bg-[#c24100] text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              >
-                Conviértete en Profesional
-              </button>
-            </div>
+            <a href="#servicios" className="text-gray-600 hover:text-[#2563EB] font-medium transition-colors">Servicios</a>
+            <a href="#privacidad" className="text-gray-600 hover:text-[#2563EB] font-medium transition-colors">Privacidad y Seguridad</a>
+            <button 
+              onClick={() => setActiveModal("proAuth")} 
+              className="ml-2 bg-[#EA580C] hover:bg-[#c24100] text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+            >
+              Conviértete en Profesional
+            </button>
           </nav>
 
           {/* Nav Mobile Toggle (Visual solo) */}
@@ -167,21 +204,59 @@ export default function Home() {
       </header>
 
       {/* 2. HERO SECTION */}
-      <main className="flex-grow pt-32 pb-16 px-4 flex flex-col items-center relative overflow-hidden">
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-0 w-full h-[60vh] bg-gradient-to-b from-[#2563EB]/5 to-transparent -z-10" />
+      <main className="flex-grow pt-24 pb-16 px-4 flex flex-col items-center justify-center relative overflow-hidden bg-[#eef2f6] min-h-[95vh]">
         
-        <div className="text-center max-w-4xl mx-auto mb-12">
+        {/* Real Dynamic Map (Full Width) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {userLocation ? (
+            <iframe 
+              width="100%" height="100%" frameBorder="0" scrolling="no" marginHeight={0} marginWidth={0} 
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${userLocation.lon-0.05},${userLocation.lat-0.025},${userLocation.lon+0.05},${userLocation.lat+0.025}&layer=mapnik`}
+              className="w-full h-full object-cover"
+              style={{ filter: "saturate(1.1)" }}
+            />
+          ) : (
+            <div className="w-full h-full bg-[#eef2f6]" />
+          )}
+        </div>
+
+        {/* Dynamic City Name Watermark (Subtle shadow over the sharp map) */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.08] pointer-events-none w-full text-center">
+           <span className="text-[80px] md:text-[150px] font-black text-gray-900 uppercase tracking-tighter leading-none whitespace-nowrap">{userCity}</span>
+        </div>
+
+        {/* Floating Avatars */}
+        {mapAvatars.map((av) => (
+          <div key={av.id} className="absolute z-10 hidden md:flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
+            <div className="w-16 h-16 rounded-full border-4 border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden bg-white mb-2 relative group hover:scale-110 transition-transform cursor-pointer hover:border-[#EA580C]">
+              <img src={`https://ui-avatars.com/api/?name=${av.name}&background=random&color=fff&bold=true`} alt={av.name} className="w-full h-full object-cover" />
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                <LucideIcons.Check className="w-3 h-3 text-white" />
+              </div>
+            </div>
+            <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-xl text-center border border-gray-100 transform -translate-y-2 group-hover:-translate-y-4 transition-all">
+               <p className="text-sm font-extrabold text-gray-900 leading-tight">{av.name}</p>
+               <p className="text-[11px] font-bold text-[#EA580C]">{av.service}</p>
+            </div>
+          </div>
+        ))}
+        
+        <div className="text-center max-w-4xl mx-auto mb-8 z-20 relative px-8 py-6 mt-8 bg-white/70 backdrop-blur-md rounded-3xl border border-white/50 shadow-sm">
+          <div className="inline-block bg-white/90 backdrop-blur-md px-6 py-2 rounded-full border border-gray-200 shadow-sm mb-6">
+            <span className="text-sm font-bold text-[#EA580C] flex items-center gap-2">
+              <LucideIcons.MapPin className="w-4 h-4" /> Profesionales activos en {userCity}
+            </span>
+          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight mb-6">
             Encuentra al experto que <span className="text-[#2563EB]">necesitas en minutos.</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-800 max-w-2xl mx-auto font-medium">
             Fontaneros, electricistas y más de 50 profesionales locales listos para ayudarte. <strong className="text-gray-900">Sin intermediarios.</strong>
           </p>
         </div>
 
         {/* WIZARD FORM */}
-        <div className="w-full max-w-xl bg-white p-6 md:p-8 rounded-[32px] shadow-[0_20px_60px_rgb(37,99,235,0.08)] border border-gray-100 z-10">
+        <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 rounded-full bg-[#EA580C]/10 flex items-center justify-center">
               <LucideIcons.Zap className="w-5 h-5 text-[#EA580C]" />
@@ -195,12 +270,17 @@ export default function Home() {
               <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Tipo de servicio</label>
               <button 
                 onClick={() => setActiveModal("category")}
-                className="w-full h-14 px-4 border-2 border-gray-100 hover:border-[#2563EB]/30 rounded-2xl flex items-center justify-between bg-gray-50/50 text-left focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all"
+                className="w-full h-14 px-4 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl flex items-center justify-between bg-blue-50/30 shadow-sm text-left focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 transition-all cursor-pointer group"
               >
-                <span className={selectedSubcategory ? "text-gray-900 font-semibold" : "text-gray-400 font-medium"}>
-                  {selectedSubcategory ? `${selectedCategory?.name} > ${selectedSubcategory.name || selectedSubcategory}` : "Selecciona una categoría..."}
-                </span>
-                <LucideIcons.ChevronDown className="w-5 h-5 text-[#EA580C]" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#2563EB]/10 flex items-center justify-center group-hover:bg-[#2563EB]/20 transition-colors">
+                    <LucideIcons.Briefcase className="w-4 h-4 text-[#2563EB]" />
+                  </div>
+                  <span className={selectedSubcategory ? "text-gray-900 font-bold" : "text-[#2563EB] font-bold"}>
+                    {selectedSubcategory ? `${selectedCategory?.name} > ${selectedSubcategory.name || selectedSubcategory}` : "Haz clic aquí para elegir tu servicio"}
+                  </span>
+                </div>
+                <LucideIcons.ChevronDown className="w-5 h-5 text-[#2563EB]" />
               </button>
             </div>
 
@@ -237,23 +317,29 @@ export default function Home() {
                 Ubicación
                 <span className="text-xs font-normal text-gray-400 normal-case">Solo detectaremos municipio</span>
               </label>
-              <div className="flex gap-3">
-                <input 
-                  type="text" 
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="flex-1 h-14 px-4 border-2 border-gray-100 rounded-2xl bg-gray-50/50 font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
-                  placeholder="Ej: Madrid Centro..." 
-                />
+              <div className="flex gap-3 group">
+                <div className="flex-1 relative">
+                  <div className="absolute left-4 top-0 bottom-0 flex items-center justify-center pointer-events-none">
+                    <LucideIcons.MapPin className="w-5 h-5 text-[#2563EB]" />
+                  </div>
+                  <input 
+                    type="text" 
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full h-14 pl-12 pr-4 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl bg-blue-50/30 shadow-sm font-bold text-[#2563EB] placeholder:text-[#2563EB]/60 placeholder:font-bold focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
+                    placeholder="Haz clic para escribir tu ciudad..." 
+                  />
+                </div>
                 <button 
                   onClick={() => {
                     if (navigator.geolocation) {
                       navigator.geolocation.getCurrentPosition(() => setLocation("Mi ubicación actual"));
                     }
                   }}
-                  className="w-14 h-14 border-2 border-gray-100 rounded-2xl flex items-center justify-center text-[#EA580C] bg-white shadow-sm hover:bg-orange-50 hover:border-orange-200 transition-colors"
+                  title="Usar mi ubicación actual"
+                  className="w-14 h-14 border-2 border-[#2563EB]/30 hover:border-[#2563EB] rounded-2xl flex items-center justify-center bg-[#2563EB] shadow-[0_4px_10px_rgb(37,99,235,0.3)] hover:bg-[#1d4ed8] hover:-translate-y-0.5 transition-all"
                 >
-                  <LucideIcons.MapPin className="w-6 h-6" />
+                  <LucideIcons.LocateFixed className="w-6 h-6 text-white" />
                 </button>
               </div>
             </div>
@@ -326,8 +412,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-3 mb-6 grayscale brightness-200">
-                <img src="/Logo_Perfil.png" alt="Logo" className="w-10 h-10 object-contain rounded-xl" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              <div className="flex items-center gap-3 mb-6">
+                <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-xl bg-white p-0.5" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                 <span className="text-2xl font-extrabold tracking-tight">Profesional Cercano</span>
               </div>
               <p className="text-gray-400 max-w-sm mb-8 leading-relaxed">
@@ -364,9 +450,9 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-bold mb-6">Legal</h4>
               <ul className="space-y-4 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Términos y Condiciones</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Política de Privacidad</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contacto</a></li>
+                <li><a href="/terminos" className="hover:text-white transition-colors">Términos y Condiciones</a></li>
+                <li><a href="/privacidad" className="hover:text-white transition-colors">Política de Privacidad</a></li>
+                <li><a href="/contacto" className="hover:text-white transition-colors">Contacto</a></li>
               </ul>
             </div>
           </div>
