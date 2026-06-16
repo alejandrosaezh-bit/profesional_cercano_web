@@ -212,7 +212,23 @@ export default function Home() {
           {userLocation ? (
             <iframe 
               width="100%" height="100%" frameBorder="0" scrolling="no" marginHeight={0} marginWidth={0} 
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${userLocation.lon-0.05},${userLocation.lat-0.025},${userLocation.lon+0.05},${userLocation.lat+0.025}&layer=mapnik`}
+              srcDoc={`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                  <style>body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #eef2f6; }</style>
+                </head>
+                <body>
+                  <div id="map"></div>
+                  <script>
+                    var map = L.map('map', { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false }).setView([${userLocation.lat}, ${userLocation.lon}], 14);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png').addTo(map);
+                  </script>
+                </body>
+                </html>
+              `}
               className="w-full h-full object-cover"
               style={{ filter: "saturate(1.1)" }}
             />
