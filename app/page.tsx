@@ -84,12 +84,12 @@ export default function Home() {
         }
       });
       if (allSubs.length > 0) {
-        const generated = Array.from({length: 6}).map((_, i) => {
+        const generated = Array.from({length: 12}).map((_, i) => {
           const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
           const randomName = names[Math.floor(Math.random() * names.length)];
-          const top = 15 + Math.random() * 60; 
-          const left = i % 2 === 0 ? (5 + Math.random() * 20) : (65 + Math.random() * 25);
-          const radius = 100 + Math.random() * 150; // Random radius between 100px and 250px
+          const top = 10 + Math.random() * 70; 
+          const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
+          const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
           return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
         });
         setMapAvatars(generated);
@@ -230,7 +230,6 @@ export default function Home() {
                 </html>
               `}
               className="w-full h-full object-cover"
-              style={{ filter: "contrast(1.25) saturate(1.5) brightness(0.95)" }}
             />
           ) : (
             <div className="w-full h-full bg-[#eef2f6]" />
