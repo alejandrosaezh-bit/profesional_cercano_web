@@ -99,8 +99,8 @@ export default function Home() {
       const generated = Array.from({length: 12}).map((_, i) => {
         const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
         const randomName = names[Math.floor(Math.random() * names.length)];
-        const top = 10 + Math.random() * 70; 
-        const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
+        const top = 10 + Math.random() * 80; 
+        const left = i % 2 === 0 ? (2 + Math.random() * 10) : (85 + Math.random() * 10);
         const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
         return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
       });
@@ -254,7 +254,7 @@ export default function Home() {
 
         {/* Floating Avatars */}
         {mapAvatars.map((av) => (
-          <div key={av.id} className="absolute z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
+          <div key={av.id} className="absolute z-30 flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
             
             {/* Coverage Ring */}
             <div 
