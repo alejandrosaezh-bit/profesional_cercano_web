@@ -18,8 +18,8 @@ export default function Home() {
   // States de UI
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
   const [isScrolled, setIsScrolled] = useState(false);
-  const [userCity, setUserCity] = useState<string>("Tu Ciudad");
-  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>(null);
+  const [userCity, setUserCity] = useState("Caracas");
+  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>({ lat: 10.4806, lon: -66.9036 });
   const [mapAvatars, setMapAvatars] = useState<any[]>([]);
   
   // Data de la solicitud
@@ -243,7 +243,7 @@ export default function Home() {
 
         {/* Floating Avatars */}
         {mapAvatars.map((av) => (
-          <div key={av.id} className="absolute z-10 hidden md:flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
+          <div key={av.id} className="absolute z-10 flex flex-col items-center animate-in fade-in zoom-in duration-1000" style={{ top: av.top, left: av.left }}>
             
             {/* Coverage Ring */}
             <div 
