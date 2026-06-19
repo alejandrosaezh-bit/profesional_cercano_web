@@ -13,7 +13,12 @@ const IconRenderer = ({ name, className = "w-7 h-7" }: { name: string, className
 };
 
 export default function Home() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([
+    { id: "fallback-1", name: "Electricidad", icon: "zap", subcategories: [{ id: "sub-1", name: "Electricista General", icon: "zap" }] },
+    { id: "fallback-2", name: "Plomería", icon: "droplet", subcategories: [{ id: "sub-2", name: "Servicio de Plomería", icon: "droplet" }] },
+    { id: "fallback-3", name: "Hogar", icon: "home", subcategories: [{ id: "sub-3", name: "Limpieza General", icon: "sparkles" }] },
+    { id: "fallback-4", name: "Tecnología", icon: "monitor", subcategories: [{ id: "sub-4", name: "Soporte Técnico", icon: "laptop" }] }
+  ]);
   
   // States de UI
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
