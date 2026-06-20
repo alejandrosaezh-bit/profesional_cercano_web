@@ -22,6 +22,7 @@ export default function Home() {
   
   // States de UI
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [userCity, setUserCity] = useState<string>("Tu Ciudad");
   const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>(null);
@@ -202,11 +203,37 @@ export default function Home() {
             </button>
           </nav>
 
-          {/* Nav Mobile Toggle (Visual solo) */}
-          <button className="lg:hidden text-gray-600 p-2">
+          {/* Nav Mobile Toggle */}
+          <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden text-gray-600 p-2">
             <LucideIcons.Menu className="w-6 h-6" />
           </button>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-white shadow-2xl flex flex-col p-6 overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
+              <span className="text-2xl font-black tracking-tighter">
+                <span className="text-[#2563EB]">Profesional</span>
+                <span className="text-[#EA580C]">Cercano</span>
+              </span>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-600 p-2">
+                <LucideIcons.X className="w-8 h-8" />
+              </button>
+            </div>
+            <nav className="flex flex-col gap-6 text-lg font-medium text-gray-700">
+              <a href="#como-funciona" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100 pb-4 hover:text-[#2563EB]">Cómo Funciona</a>
+              <a href="#servicios" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100 pb-4 hover:text-[#2563EB]">Servicios</a>
+              <a href="#privacidad" onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100 pb-4 hover:text-[#2563EB]">Privacidad y Seguridad</a>
+              <button 
+                onClick={() => { setIsMobileMenuOpen(false); setActiveModal("proAuth"); }} 
+                className="mt-4 bg-[#EA580C] text-white px-6 py-3 rounded-xl font-bold shadow-lg"
+              >
+                Conviértete en Profesional
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* 2. HERO SECTION */}
@@ -264,7 +291,7 @@ export default function Home() {
             />
 
             <div className="w-16 h-16 rounded-full border-4 border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden bg-white mb-2 relative group hover:scale-110 transition-transform cursor-pointer hover:border-[#EA580C] z-10">
-              <img src={`https://ui-avatars.com/api/?name=${av.name}&background=random&color=fff&bold=true`} alt={av.name} className="w-full h-full object-cover" />
+              <img src={`https://i.pravatar.cc/150?u=${av.id}`} alt={av.name} className="w-full h-full object-cover" />
               <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                 <LucideIcons.Check className="w-3 h-3 text-white" />
               </div>
@@ -276,23 +303,19 @@ export default function Home() {
           </div>
         ))}
         
-        <div className="text-center max-w-4xl mx-auto mb-8 z-20 relative px-8 py-6 mt-8 bg-white/70 backdrop-blur-md rounded-3xl border border-white/50 shadow-sm">
-          <div className="inline-block bg-white/90 backdrop-blur-md px-6 py-2 rounded-full border border-gray-200 shadow-sm mb-6">
-            <span className="text-sm font-bold text-[#EA580C] flex items-center gap-2">
-              <LucideIcons.MapPin className="w-4 h-4" /> Profesionales activos en {userCity}
-            </span>
+        {/* UNIFIED HERO CARD */}
+        <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative mt-8 mb-4">
+          
+          <div className="text-center mb-8 pb-8 border-b border-gray-100">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight mb-3">
+              Encuentra al experto que <span className="text-[#2563EB]">necesitas en minutos.</span>
+            </h1>
+            <p className="text-base text-gray-800 font-medium">
+              Fontaneros, electricistas y más de 50 profesionales listos para ayudarte. <strong className="text-gray-900">Sin intermediarios.</strong>
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight mb-6">
-            Encuentra al experto que <span className="text-[#2563EB]">necesitas en minutos.</span>
-          </h1>
-          <p className="text-lg md:text-xl text-gray-800 max-w-2xl mx-auto font-medium">
-            Fontaneros, electricistas y más de 50 profesionales locales listos para ayudarte. <strong className="text-gray-900">Sin intermediarios.</strong>
-          </p>
-        </div>
 
-        {/* WIZARD FORM */}
-        <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative">
-          <div className="mb-8">
+          <div className="mb-6 text-center">
             <h2 className="text-2xl md:text-[28px] font-extrabold text-gray-900 tracking-tight leading-tight">¿Qué servicio buscas hoy?</h2>
           </div>
 
@@ -612,27 +635,49 @@ export default function Home() {
             >
               <LucideIcons.X className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
-                <LucideIcons.Briefcase className="w-5 h-5 text-[#2563EB]" />
+            
+            <div className="text-center mb-6 mt-2">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-[#EA580C]/10 flex items-center justify-center mb-4">
+                <LucideIcons.Smartphone className="w-8 h-8 text-[#EA580C]" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900">Únete a la red</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Descarga la App para Profesionales</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">Todo el trabajo, las solicitudes de clientes y tus ganancias se gestionan exclusivamente desde nuestra aplicación móvil.</p>
             </div>
-            <p className="text-gray-500 mb-6 text-sm">Consigue nuevos clientes locales cada día. Regístrate gratis.</p>
+
+            <div className="flex gap-3 justify-center mb-8">
+               <button className="flex-1 bg-black text-white rounded-xl py-3 flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
+                  <LucideIcons.Apple className="w-6 h-6" />
+                  <div className="text-left leading-tight">
+                     <div className="text-[10px] text-gray-300">Descargar en</div>
+                     <div className="text-sm font-bold">App Store</div>
+                  </div>
+               </button>
+               <button className="flex-1 bg-black text-white rounded-xl py-3 flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
+                  <LucideIcons.Play className="w-5 h-5 ml-1" />
+                  <div className="text-left leading-tight">
+                     <div className="text-[10px] text-gray-300">Disponible en</div>
+                     <div className="text-sm font-bold">Google Play</div>
+                  </div>
+               </button>
+            </div>
+
+            <div className="relative flex items-center py-2 mb-6">
+              <div className="flex-grow border-t border-gray-200"></div>
+              <span className="flex-shrink-0 mx-4 text-gray-400 text-sm font-medium">¿Prefieres atención humana?</span>
+              <div className="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <p className="text-gray-500 mb-4 text-sm text-center">Déjanos tus datos y un asesor te ayudará a crear tu cuenta paso a paso.</p>
             
             <form onSubmit={handleProRegister} className="space-y-4">
-              <input required type="text" value={proName} onChange={e => setProName(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-all" placeholder="Nombre o Empresa" />
-              <input required type="email" value={proEmail} onChange={e => setProEmail(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-all" placeholder="Correo electrónico" />
-              <div className="grid grid-cols-2 gap-3">
-                <input required type="tel" value={proPhone} onChange={e => setProPhone(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-all" placeholder="Teléfono" />
-                <input required type="text" value={proSpecialty} onChange={e => setProSpecialty(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-all" placeholder="Tu Especialidad" />
-              </div>
-              <button type="submit" disabled={proStatus === 'loading'} className="w-full h-14 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold rounded-2xl mt-4 disabled:opacity-70 transition-colors shadow-lg shadow-blue-500/20">
-                {proStatus === 'loading' ? 'Enviando...' : 'Comenzar Registro'}
+              <input required type="text" value={proName} onChange={e => setProName(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Nombre completo" />
+              <input required type="tel" value={proPhone} onChange={e => setProPhone(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Número de WhatsApp" />
+              <button type="submit" disabled={proStatus === 'loading'} className="w-full h-14 bg-white border-2 border-[#EA580C] text-[#EA580C] hover:bg-[#EA580C] hover:text-white font-bold rounded-2xl mt-2 transition-colors">
+                {proStatus === 'loading' ? 'Enviando...' : 'Solicitar ayuda para registrarme'}
               </button>
               {proStatus === 'success' && (
                 <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl mt-4 text-center font-bold text-sm">
-                  ¡Registro exitoso! Te contactaremos pronto.
+                  ¡Datos recibidos! Te escribiremos por WhatsApp pronto.
                 </div>
               )}
             </form>
