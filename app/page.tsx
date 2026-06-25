@@ -80,7 +80,8 @@ export default function Home() {
 
   useEffect(() => {
     if (categories.length > 0) {
-      const names = ["Juan", "María", "Carlos", "Ana", "Luis", "Elena", "Pedro", "Sofía", "Miguel", "Lucía"];
+      const menNames = ["Juan", "Carlos", "Luis", "Pedro", "Miguel", "Antonio", "Javier"];
+      const womenNames = ["María", "Ana", "Elena", "Sofía", "Lucía", "Carmen", "Laura"];
       const allSubs: any[] = [];
       categories.forEach(c => {
         if (c.subcategories) {
@@ -92,11 +93,23 @@ export default function Home() {
       if (allSubs.length > 0) {
         const generated = Array.from({length: 12}).map((_, i) => {
           const randomSub = allSubs[Math.floor(Math.random() * allSubs.length)];
-          const randomName = names[Math.floor(Math.random() * names.length)];
+          const isMale = Math.random() > 0.5;
+          const randomName = isMale ? menNames[Math.floor(Math.random() * menNames.length)] : womenNames[Math.floor(Math.random() * womenNames.length)];
+          const genderPath = isMale ? 'men' : 'women';
+          const randomImageId = Math.floor(Math.random() * 90) + 1;
           const top = 10 + Math.random() * 70; 
           const left = i % 2 === 0 ? (2 + Math.random() * 25) : (65 + Math.random() * 30);
           const radius = 200 + Math.random() * 300; // Random radius between 200px and 500px
-          return { id: i, name: randomName, service: randomSub.name, icon: randomSub.icon, top: `${top}%`, left: `${left}%`, radius };
+          return { 
+            id: i, 
+            name: randomName, 
+            service: randomSub.name, 
+            icon: randomSub.icon, 
+            top: `${top}%`, 
+            left: `${left}%`, 
+            radius,
+            imageUrl: `https://randomuser.me/api/portraits/${genderPath}/${randomImageId}.jpg`
+          };
         });
         setMapAvatars(generated);
       }
@@ -291,7 +304,7 @@ export default function Home() {
             />
 
             <div className="w-16 h-16 rounded-full border-4 border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden bg-white mb-2 relative group hover:scale-110 transition-transform cursor-pointer hover:border-[#EA580C] z-10">
-              <img src={`https://i.pravatar.cc/150?u=${av.id}`} alt={av.name} className="w-full h-full object-cover" />
+              <img src={av.imageUrl || `https://i.pravatar.cc/150?u=${av.id}`} alt={av.name} className="w-full h-full object-cover" />
               <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                 <LucideIcons.Check className="w-3 h-3 text-white" />
               </div>
