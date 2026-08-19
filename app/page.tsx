@@ -4,9 +4,79 @@
 import { useState, useEffect } from "react";
 import * as LucideIcons from "lucide-react";
 
-// Motor de Iconos Dinámico (exactamente igual a la App Móvil)
+// Mapeo de Iconos de la BD (MaterialCommunityIcons/FontAwesome) a LucideIcons
+const LUCIDE_MAPPING: Record<string, keyof typeof LucideIcons> = {
+  "air-conditioner": "Wind",
+  "balloon": "PartyPopper",
+  "book": "Book",
+  "brain": "Brain",
+  "broom": "Brush",
+  "brush": "Paintbrush",
+  "calculator": "Calculator",
+  "calculator-variant": "Calculator",
+  "camera": "Camera",
+  "camera-burst": "Camera",
+  "car-battery": "Battery",
+  "car-coolant-level": "Droplet",
+  "car-wash": "Droplets",
+  "car-wrench": "Wrench",
+  "cctv": "Video",
+  "cellphone-cog": "Smartphone",
+  "content-cut": "Scissors",
+  "dog": "Dog",
+  "dog-service": "Dog",
+  "download": "Download",
+  "dumbbell": "Dumbbell",
+  "face-man-shimmer": "Smile",
+  "file-document-multiple": "Files",
+  "food-apple": "Apple",
+  "format-paint": "PaintRoller",
+  "hand-sparkles": "Sparkles",
+  "home-account": "Home",
+  "home-search": "Search",
+  "human-cane": "PersonStanding",
+  "human-wheelchair": "Wheelchair",
+  "key": "Key",
+  "laptop-medical": "Laptop",
+  "lightning-bolt": "Zap",
+  "medical-bag": "BriefcaseMedical",
+  "moped": "Bike",
+  "music": "Music",
+  "party-popper": "PartyPopper",
+  "robot": "Bot",
+  "saw-blade": "Hammer",
+  "scale-balance": "Scale",
+  "silverware-fork-knife": "Utensils",
+  "spa": "Sparkles",
+  "spray": "SprayCan",
+  "tire": "CircleDot",
+  "tooth": "Stethoscope",
+  "tow-truck": "Truck",
+  "typewriter": "Type",
+  "user-nurse": "HeartPulse",
+  "wall": "BrickWall",
+  "water-pump": "Droplet",
+  "wifi": "Wifi",
+  "briefcase": "Briefcase",
+  "calendar": "Calendar",
+  "car": "Car",
+  "cat": "Cat",
+  "diamond-stone": "Gem",
+  "heart": "Heart",
+  "home": "Home",
+  "monitor": "Monitor"
+};
+
 const IconRenderer = ({ name, className = "w-7 h-7" }: { name: string, className?: string }) => {
   if (!name) return <LucideIcons.Wrench className={className} />;
+  
+  // Buscar mapeo directo primero
+  if (LUCIDE_MAPPING[name]) {
+    const IconComponent = (LucideIcons as any)[LUCIDE_MAPPING[name]];
+    if (IconComponent) return <IconComponent className={className} />;
+  }
+
+  // Fallback: tratar de adivinar el nombre convirtiendo a PascalCase
   const iconName = name.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
   const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.Wrench;
   return <IconComponent className={className} />;
