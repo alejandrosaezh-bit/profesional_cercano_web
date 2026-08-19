@@ -317,7 +317,7 @@ export default function Home() {
         ))}
         
         {/* UNIFIED HERO CARD */}
-        <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative mt-8 mb-4">
+        <div className="w-full max-w-xl bg-white p-6 md:p-8 rounded-[32px] shadow-[0_30px_80px_rgb(37,99,235,0.15)] border-2 border-white z-20 relative mt-8 mb-4">
           
           <div className="text-center mb-8 pb-8 border-b border-gray-100">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight mb-3">
