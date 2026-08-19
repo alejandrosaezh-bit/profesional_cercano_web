@@ -351,23 +351,23 @@ export default function Home() {
             {selectedSubcategory && (
               <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Título de la necesidad</label>
+                  <label className="block text-base font-bold text-gray-900 mb-2">Ponle un título a tu necesidad</label>
                   <input 
                     type="text" 
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full h-14 px-4 border-2 border-gray-100 rounded-2xl bg-gray-50/50 font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
+                    className="w-full h-14 px-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl bg-white font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
                     placeholder="Ej. El aire no enfría y hace ruido" 
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Explícanos qué sucede</label>
+                  <label className="block text-base font-bold text-gray-900 mb-2">Explícanos qué sucede</label>
                   <textarea 
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full p-4 border-2 border-gray-100 rounded-2xl bg-gray-50/50 font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all resize-none" 
+                    className="w-full p-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl bg-white font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all resize-none" 
                     placeholder="Detalla el problema para recibir mejores presupuestos..." 
                   />
                 </div>
@@ -408,13 +408,13 @@ export default function Home() {
                 <label className="block text-base font-bold text-gray-900 mb-1">Complementa con una imagen o Vídeo</label>
                 <p className="text-[13px] text-gray-500 italic mb-4">*Añadir multimedia ayuda a recibir mejores presupuestos.</p>
                 <div className="grid grid-cols-3 gap-3">
-                  <button className="h-12 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center gap-2 text-gray-700 font-semibold text-sm hover:bg-gray-100 transition-colors">
+                  <button className="h-12 bg-gray-50 border-2 border-gray-300 rounded-xl flex items-center justify-center gap-2 text-gray-700 font-semibold text-sm hover:bg-gray-100 hover:border-gray-400 transition-colors">
                     <LucideIcons.FilePlus className="w-4 h-4" /> Archivo
                   </button>
-                  <button className="h-12 bg-blue-50/50 border border-blue-100 rounded-xl flex items-center justify-center gap-2 text-[#2563EB] font-semibold text-sm hover:bg-blue-50 transition-colors">
+                  <button className="h-12 bg-blue-50/50 border-2 border-gray-300 rounded-xl flex items-center justify-center gap-2 text-[#2563EB] font-semibold text-sm hover:bg-blue-50 hover:border-gray-400 transition-colors">
                     <LucideIcons.Camera className="w-4 h-4" /> Foto
                   </button>
-                  <button className="h-12 bg-red-50/50 border border-red-100 rounded-xl flex items-center justify-center gap-2 text-red-500 font-semibold text-sm hover:bg-red-50 transition-colors">
+                  <button className="h-12 bg-red-50/50 border-2 border-gray-300 rounded-xl flex items-center justify-center gap-2 text-red-500 font-semibold text-sm hover:bg-red-50 hover:border-gray-400 transition-colors">
                     <LucideIcons.PlayCircle className="w-4 h-4" /> Vídeo
                   </button>
                 </div>
