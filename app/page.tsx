@@ -610,7 +610,7 @@ export default function Home() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full h-14 px-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl bg-white font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all" 
-                    placeholder="Ej. El aire no enfría y hace ruido" 
+                    placeholder={selectedSubcategory?.titlePlaceholder || "Ej. Detalla el título de tu necesidad..."} 
                   />
                 </div>
                 
@@ -621,7 +621,7 @@ export default function Home() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full p-4 border-2 border-gray-300 hover:border-gray-400 rounded-2xl bg-white font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 outline-none transition-all resize-none" 
-                    placeholder="Detalla el problema para recibir mejores presupuestos..." 
+                    placeholder={selectedSubcategory?.descriptionPlaceholder || "Detalla el problema para recibir mejores presupuestos..."} 
                   />
                 </div>
               </div>
