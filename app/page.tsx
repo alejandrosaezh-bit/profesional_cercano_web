@@ -383,20 +383,39 @@ export default function Home() {
 
     setRequestStatus("loading");
     try {
-      const res = await fetch(`${API_URL}/web-request`, {
+      const payload = {
+        type: "service_request",
+        category: selectedCategory.name || selectedCategory._id,
+        subcategory: selectedSubcategory.name || selectedSubcategory,
+        title,
+        location,
+        description,
+        name: clientName,
+        email: clientEmail,
+        phone: clientPhone,
+      };
+
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify(payload),
+      });
+
+      fetch(`${API_URL}/web-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           category: selectedCategory._id || selectedCategory.name,
           subcategory: selectedSubcategory.name || selectedSubcategory,
           title,
-          location, 
-          description, 
-          name: clientName, 
-          email: clientEmail, 
-          phone: clientPhone 
+          location,
+          description,
+          name: clientName,
+          email: clientEmail,
+          phone: clientPhone,
         }),
-      });
+      }).catch(() => {});
+
       if (!res.ok) throw new Error("Error en la solicitud");
       setRequestStatus("success");
       setTimeout(() => {
@@ -418,16 +437,29 @@ export default function Home() {
     e.preventDefault();
     setProStatus("loading");
     try {
-      const res = await fetch(`${API_URL}/web-register`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          name: proName, 
-          email: proEmail, 
-          phone: proPhone, 
-          specialty: proSpecialty 
+        body: JSON.stringify({
+          type: "pro_register",
+          name: proName,
+          email: proEmail,
+          phone: proPhone,
+          specialty: proSpecialty,
         }),
       });
+
+      fetch(`${API_URL}/web-register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: proName,
+          email: proEmail,
+          phone: proPhone,
+          specialty: proSpecialty,
+        }),
+      }).catch(() => {});
+
       if (!res.ok) throw new Error("Error en registro B2B");
       setProStatus("success");
       setTimeout(() => {
@@ -938,17 +970,152 @@ export default function Home() {
             <form onSubmit={handleProRegister} className="space-y-4">
               <input required type="text" value={proName} onChange={e => setProName(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Nombre completo" />
               <input required type="tel" value={proPhone} onChange={e => setProPhone(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Número de WhatsApp" />
+              <input type="email" value={proEmail} onChange={e => setProEmail(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Correo electrónico (opcional)" />
+              <input type="text" value={proSpecialty} onChange={e => setProSpecialty(e.target.value)} className="w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/10 transition-all" placeholder="Especialidad u oficio (ej. Electricista, Plomero)" />
               <button type="submit" disabled={proStatus === 'loading'} className="w-full h-14 bg-white border-2 border-[#EA580C] text-[#EA580C] hover:bg-[#EA580C] hover:text-white font-bold rounded-2xl mt-2 transition-colors">
                 {proStatus === 'loading' ? 'Enviando...' : 'Solicitar ayuda para registrarme'}
               </button>
               {proStatus === 'success' && (
                 <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl mt-4 text-center font-bold text-sm">
-                  ¡Datos recibidos! Te escribiremos por WhatsApp pronto.
+                  ¡Datos recibidos! Sofía IA ya registró tu perfil y te contactaremos pronto.
                 </div>
               )}
             </form>
           </div>
         </div>
+      )}
+
+      <SofiaProCercanoWidget />
+    </div>
+  );
+}
+
+function SofiaProCercanoWidget() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<{ from: "sofia" | "user"; text: string }[]>([
+    {
+      from: "sofia",
+      text: "¡Hola! 👋 Soy Sofía, asistente IA de Profesional Cercano 🛠️🇻🇪. ¿Buscas contratar un profesional verificado o deseas registrarte para ofrecer tus servicios?",
+    },
+  ]);
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || loading) return;
+    const text = input.trim();
+    setInput("");
+    setMessages(prev => [...prev, { from: "user", text }]);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/webhook-omnichannel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          channel: "web_chat",
+          sender_id: name.trim() || "visitante_web",
+          sender_name: name.trim() || "Visitante Web",
+          message_text: text,
+        }),
+      });
+      const data = await res.json();
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "sofia",
+          text:
+            data.reply ||
+            "¡Gracias! Ya registré tu consulta en nuestro sistema. También puedes escribirnos por WhatsApp al +58 422-2537239.",
+        },
+      ]);
+    } catch {
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "sofia",
+          text: "Puedes escribirnos directo a nuestro WhatsApp +58 422-2537239 o a info@profesionalcercano.com.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed bottom-5 right-5 z-50">
+      {open ? (
+        <div className="w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col">
+          <div className="bg-gradient-to-r from-[#2563EB] to-[#EA580C] text-white p-4 flex items-center justify-between">
+            <div>
+              <div className="font-bold text-sm">Sofía IA — Profesional Cercano</div>
+              <div className="text-xs opacity-90">En línea · Conectada a Odoo CRM</div>
+            </div>
+            <button onClick={() => setOpen(false)} className="text-white/90 hover:text-white p-1">
+              <LucideIcons.X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="p-3 bg-gray-50 border-b border-gray-100">
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Tu nombre o ciudad (opcional)"
+              className="w-full text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white outline-none focus:border-[#2563EB]"
+            />
+          </div>
+          <div className="p-4 h-64 overflow-y-auto space-y-3 text-sm bg-white">
+            {messages.map((m, i) => (
+              <div
+                key={i}
+                className={`p-3 rounded-2xl max-w-[85%] whitespace-pre-line ${
+                  m.from === "sofia"
+                    ? "bg-blue-50 text-gray-800 self-start mr-auto"
+                    : "bg-[#EA580C] text-white self-end ml-auto"
+                }`}
+              >
+                {m.text}
+              </div>
+            ))}
+            {loading && <div className="text-xs text-gray-400 italic">Sofía está escribiendo...</div>}
+          </div>
+          <form onSubmit={sendMessage} className="p-3 border-t border-gray-100 flex gap-2 bg-white">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder="Escribe tu consulta..."
+              className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-[#2563EB]"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-colors"
+            >
+              Enviar
+            </button>
+          </form>
+          <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center text-xs">
+            <span className="text-gray-500">¿Prefieres WhatsApp?</span>
+            <a
+              href="https://wa.me/584222537239?text=Hola%20Sof%C3%ADa,%20vengo%20de%20Profesional%20Cercano"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#EA580C] font-bold hover:underline"
+            >
+              Abrir WhatsApp →
+            </a>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-gradient-to-r from-[#2563EB] to-[#EA580C] text-white px-5 py-3.5 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center gap-2 font-bold text-sm"
+        >
+          <LucideIcons.MessageCircle className="w-5 h-5" />
+          <span>Sofía IA · Ayuda en línea</span>
+        </button>
       )}
     </div>
   );
