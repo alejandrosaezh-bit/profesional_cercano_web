@@ -383,25 +383,9 @@ export default function Home() {
 
     setRequestStatus("loading");
     try {
-      const payload = {
-        type: "service_request",
-        category: selectedCategory.name || selectedCategory._id,
-        subcategory: selectedSubcategory.name || selectedSubcategory,
-        title,
-        location,
-        description,
-        name: clientName,
-        email: clientEmail,
-        phone: clientPhone,
-      };
-
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      fetch(`${API_URL}/web-request`, {
+      // Las solicitudes normales de servicios se gestionan 100% de manera automática en la App
+      // sin enviarse a Odoo CRM para no saturar el pipeline con operaciones automáticas.
+      const res = await fetch(`${API_URL}/web-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -414,7 +398,7 @@ export default function Home() {
           email: clientEmail,
           phone: clientPhone,
         }),
-      }).catch(() => {});
+      });
 
       if (!res.ok) throw new Error("Error en la solicitud");
       setRequestStatus("success");
@@ -437,11 +421,12 @@ export default function Home() {
     e.preventDefault();
     setProStatus("loading");
     try {
+      // Solicitud puntual de "Atención Humana" para soporte en registro -> va al backend y a Odoo CRM como caso de soporte puntual
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "pro_register",
+          type: "human_assistance",
           name: proName,
           email: proEmail,
           phone: proPhone,
@@ -460,7 +445,7 @@ export default function Home() {
         }),
       }).catch(() => {});
 
-      if (!res.ok) throw new Error("Error en registro B2B");
+      if (!res.ok) throw new Error("Error en solicitud de asistencia");
       setProStatus("success");
       setTimeout(() => {
         setActiveModal("none");
@@ -998,7 +983,7 @@ function SofiaProCercanoWidget() {
   const [messages, setMessages] = useState<{ from: "sofia" | "user"; text: string }[]>([
     {
       from: "sofia",
-      text: "¡Hola! 👋 Soy Sofía, asistente IA de Profesional Cercano 🛠️🇻🇪. ¿Buscas contratar un profesional verificado o deseas registrarte para ofrecer tus servicios?",
+      text: "¡Hola! 👋 Soy Sofía, asistente de soporte de Profesional Cercano 🛠️🇻🇪. ¿Tienes algún problema técnico, requerimiento puntual o duda sobre el uso de la App?",
     },
   ]);
 

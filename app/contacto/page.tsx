@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function ContactoPage() {
+  const [issueType, setIssueType] = useState("Problema Técnico / Soporte en la App");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,7 +19,8 @@ export default function ContactoPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: "general_contact",
+          type: "specific_request",
+          issueType,
           name,
           email,
           phone,
@@ -49,9 +51,9 @@ export default function ContactoPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900 border border-slate-800 p-8 md:p-12 rounded-2xl shadow-xl">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Contacto y Soporte</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Soporte Técnico y Casos Puntuales</h1>
             <p className="text-base text-slate-400 mb-8">
-              Si necesitas contratar un servicio, registrarte como profesional verificado o consultar sobre nuestras políticas en Venezuela, nuestro equipo y nuestra asistente IA <strong>Sofía</strong> están listos para atenderte.
+              Las solicitudes de servicios y el registro de profesionales funcionan de manera <strong>100% automática en nuestra App</strong>. Utiliza este canal únicamente si presentas algún inconveniente técnico, tienes una consulta sobre tu suscripción o requieres atención para un caso puntual.
             </p>
 
             <div className="space-y-6">
@@ -60,10 +62,10 @@ export default function ContactoPage() {
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Correos Oficiales</h3>
-                  <p className="text-slate-400 text-sm mt-1">Atención general y comercial:</p>
+                  <h3 className="text-lg font-semibold text-white">Correos de Soporte y Legal</h3>
+                  <p className="text-slate-400 text-sm mt-1">Soporte técnico y casos especiales:</p>
                   <a href="mailto:info@profesionalcercano.com" className="text-orange-500 hover:underline font-medium block">info@profesionalcercano.com</a>
-                  <p className="text-slate-400 text-sm mt-2">Soporte legal y privacidad:</p>
+                  <p className="text-slate-400 text-sm mt-2">Privacidad y requerimientos legales:</p>
                   <a href="mailto:legal@profesionalcercano.com" className="text-orange-500 hover:underline font-medium block">legal@profesionalcercano.com</a>
                 </div>
               </div>
@@ -73,8 +75,8 @@ export default function ContactoPage() {
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">WhatsApp Directo</h3>
-                  <p className="text-slate-400 text-sm mt-1">Atención inmediata en Venezuela:</p>
+                  <h3 className="text-lg font-semibold text-white">WhatsApp de Soporte</h3>
+                  <p className="text-slate-400 text-sm mt-1">Atención para incidencias puntuales:</p>
                   <a href="https://wa.me/584222537239" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline font-semibold inline-block mt-1">
                     +58 422-2537239
                   </a>
@@ -94,8 +96,22 @@ export default function ContactoPage() {
           </div>
 
           <div className="bg-slate-950/60 border border-slate-800 p-6 rounded-xl">
-            <h2 className="text-xl font-bold text-white mb-4">Envíanos un mensaje</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Reportar caso puntual o incidencia</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Tipo de requerimiento</label>
+                <select
+                  value={issueType}
+                  onChange={e => setIssueType(e.target.value)}
+                  className="w-full h-11 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white outline-none focus:border-orange-500 text-sm"
+                >
+                  <option value="Problema Técnico / Soporte en la App">Problema Técnico / Soporte en la App</option>
+                  <option value="Requerimiento Puntual / Caso Especial">Requerimiento Puntual / Caso Especial</option>
+                  <option value="Suscripción PRO-ELITE / Pagos">Suscripción PRO-ELITE / Pagos</option>
+                  <option value="Apelación / Verificación KYC">Apelación / Verificación KYC</option>
+                  <option value="Consulta Legal / Privacidad">Consulta Legal / Privacidad</option>
+                </select>
+              </div>
               <input
                 required
                 type="text"
@@ -109,7 +125,7 @@ export default function ContactoPage() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="Correo electrónico"
+                placeholder="Correo registrado en la App"
                 className="w-full h-11 px-4 rounded-lg bg-slate-900 border border-slate-700 text-white outline-none focus:border-orange-500"
               />
               <input
@@ -124,7 +140,7 @@ export default function ContactoPage() {
                 rows={4}
                 value={message}
                 onChange={e => setMessage(e.target.value)}
-                placeholder="¿En qué podemos ayudarte?"
+                placeholder="Describe el problema técnico o requerimiento específico..."
                 className="w-full p-4 rounded-lg bg-slate-900 border border-slate-700 text-white outline-none focus:border-orange-500"
               />
               <button
@@ -132,11 +148,11 @@ export default function ContactoPage() {
                 disabled={status === "loading"}
                 className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors disabled:opacity-60"
               >
-                {status === "loading" ? "Enviando..." : "Enviar mensaje"}
+                {status === "loading" ? "Enviando caso..." : "Enviar a Soporte"}
               </button>
               {status === "success" && (
                 <div className="p-3 bg-emerald-950/80 border border-emerald-700 text-emerald-300 rounded-lg text-sm">
-                  ¡Mensaje enviado! Sofía IA ya te envió una confirmación a tu correo y registró tu solicitud.
+                  ¡Caso registrado! Sofía IA ya envió el acuse de recibo a tu correo y escaló el ticket a nuestro equipo.
                 </div>
               )}
               {status === "error" && (
