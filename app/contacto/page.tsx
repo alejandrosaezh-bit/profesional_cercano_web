@@ -75,10 +75,10 @@ export default function ContactoPage() {
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">WhatsApp de Soporte</h3>
-                  <p className="text-slate-400 text-sm mt-1">Atención para incidencias puntuales:</p>
-                  <a href="https://wa.me/584222537239" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline font-semibold inline-block mt-1">
-                    +58 422-2537239
+                  <h3 className="text-lg font-semibold text-white">Pagos y Suscripciones</h3>
+                  <p className="text-slate-400 text-sm mt-1">Consultas sobre planes PRO / ELITE:</p>
+                  <a href="mailto:pagos@profesionalcercano.com" className="text-orange-500 hover:underline font-semibold inline-block mt-1">
+                    pagos@profesionalcercano.com
                   </a>
                 </div>
               </div>
