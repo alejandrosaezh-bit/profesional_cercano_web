@@ -1035,7 +1035,7 @@ function SofiaProCercanoWidget() {
           <div className="bg-gradient-to-r from-[#2563EB] to-[#EA580C] text-white p-4 flex items-center justify-between">
             <div>
               <div className="font-bold text-sm">Sofía IA — Profesional Cercano</div>
-              <div className="text-xs opacity-90">En línea · Conectada a Odoo CRM</div>
+              <div className="text-xs opacity-90">En línea · Atención inmediata</div>
             </div>
             <button onClick={() => setOpen(false)} className="text-white/90 hover:text-white p-1">
               <LucideIcons.X className="w-5 h-5" />
