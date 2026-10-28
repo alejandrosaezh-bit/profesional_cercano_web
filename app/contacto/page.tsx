@@ -89,7 +89,7 @@ export default function ContactoPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">Operaciones</h3>
-                  <p className="text-slate-400 text-sm mt-1">Soluciones Digitales Creapptivas C.A. — República Bolivariana de Venezuela.</p>
+                  <p className="text-slate-400 text-sm mt-1">SOLUCIONES DIGITALES CREAPPTIVAS C.A. (RIF: J508901061) — República Bolivariana de Venezuela.</p>
                 </div>
               </div>
             </div>
@@ -163,6 +163,10 @@ export default function ContactoPage() {
             </form>
           </div>
         </div>
+
+        <footer className="mt-10 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+          &copy; {new Date().getFullYear()} <strong className="text-slate-400">SOLUCIONES DIGITALES CREAPPTIVAS C.A.</strong> — RIF: <strong className="text-slate-400">J508901061</strong> • Todos los derechos reservados.
+        </footer>
       </div>
     </div>
   );

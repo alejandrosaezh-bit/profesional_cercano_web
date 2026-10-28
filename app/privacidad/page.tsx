@@ -53,6 +53,10 @@ export default function PrivacidadPage() {
             Sin embargo, por razones de seguridad, prevención de fraude y cumplimiento legal (prevención de legitimación de capitales), la Plataforma podría retener información transaccional básica y el registro de identidad de Profesionales verificados por un período prudencial posterior a la solicitud de eliminación.
           </p>
         </div>
+
+        <footer className="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+          &copy; {new Date().getFullYear()} <strong className="text-slate-400">SOLUCIONES DIGITALES CREAPPTIVAS C.A.</strong> — RIF: <strong className="text-slate-400">J508901061</strong> • Todos los derechos reservados.
+        </footer>
       </div>
     </div>
   );

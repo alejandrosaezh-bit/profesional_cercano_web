@@ -14,6 +14,7 @@ export default function TerminosPage() {
         <h1 className="text-4xl font-bold text-white mb-8">Términos y Condiciones de Uso</h1>
         <div className="space-y-6 text-lg leading-relaxed">
           <p><strong>Fecha de última actualización:</strong> Mayo 2026<br/>
+          <strong>Titular de la Plataforma:</strong> SOLUCIONES DIGITALES CREAPPTIVAS C.A. (RIF: J508901061)<br/>
           <strong>Jurisdicción:</strong> República Bolivariana de Venezuela</p>
           
           <div className="bg-orange-500/10 border-l-4 border-orange-500 p-4 rounded text-orange-200 text-base">
@@ -55,6 +56,10 @@ export default function TerminosPage() {
             La Plataforma se reserva el <strong>Derecho de Admisión</strong> y el derecho a suspender, cancelar o eliminar de forma permanente e inapelable cualquier cuenta que incumpla estos términos, o que publique contenido inapropiado, falso, ilegal u ofensivo.
           </p>
         </div>
+
+        <footer className="mt-12 pt-8 border-t border-slate-800 text-center text-sm text-slate-500">
+          &copy; {new Date().getFullYear()} <strong className="text-slate-400">SOLUCIONES DIGITALES CREAPPTIVAS C.A.</strong> — RIF: <strong className="text-slate-400">J508901061</strong> • Todos los derechos reservados.
+        </footer>
       </div>
     </div>
   );
