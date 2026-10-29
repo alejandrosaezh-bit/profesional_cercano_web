@@ -792,7 +792,7 @@ export default function Home() {
                 &copy; {new Date().getFullYear()} SOLUCIONES DIGITALES CREAPPTIVAS C.A. — Todos los derechos reservados.
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                IDENTIFICACIÓN DEL CONTRIBUYENTE • RIF: <strong className="text-gray-400">J508901061</strong> • Profesional Cercano
+                RIF: <strong className="text-gray-400">J508901061</strong> • Profesional Cercano
               </p>
             </div>
             <div className="flex gap-4 mt-4 md:mt-0">
