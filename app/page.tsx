@@ -277,8 +277,8 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState<"none" | "category" | "subcategory" | "auth" | "proAuth">("none");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [userCity, setUserCity] = useState<string>("Tu Ciudad");
-  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>(null);
+  const [userCity, setUserCity] = useState<string>("Caracas");
+  const [userLocation, setUserLocation] = useState<{lat: number, lon: number} | null>({ lat: 10.4806, lon: -66.9036 });
   const [mapAvatars, setMapAvatars] = useState<any[]>([]);
   
   // Data de la solicitud
@@ -522,8 +522,15 @@ export default function Home() {
       {/* 2. HERO SECTION */}
       <main className="flex-grow pt-24 pb-16 px-4 flex flex-col items-center justify-center relative overflow-hidden bg-[#eef2f6] min-h-[95vh]">
         
-        {/* Real Dynamic Map (Full Width) */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Real Dynamic Map (Full Width - Free Tiles Without API Key Watermark) */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage: "url('/map-bg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
           {userLocation ? (
             <iframe 
               width="100%" height="100%" frameBorder="0" scrolling="no" marginHeight={0} marginWidth={0} 
@@ -531,15 +538,42 @@ export default function Home() {
                 <!DOCTYPE html>
                 <html>
                 <head>
+                  <meta name="referrer" content="origin" />
                   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
                   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-                  <style>body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #eef2f6; }</style>
+                  <style>
+                    body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #eef2f6; }
+                    .leaflet-tile-pane { filter: saturate(0.65) brightness(1.04) contrast(0.95); opacity: 0.88; }
+                  </style>
                 </head>
                 <body>
                   <div id="map"></div>
                   <script>
-                    var map = L.map('map', { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false }).setView([${userLocation.lat}, ${userLocation.lon}], 14);
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png').addTo(map);
+                    var map = L.map('map', {
+                      zoomControl: false,
+                      attributionControl: false,
+                      dragging: false,
+                      scrollWheelZoom: false,
+                      doubleClickZoom: false
+                    }).setView([${userLocation.lat}, ${userLocation.lon}], 14);
+
+                    var primaryLayer = L.tileLayer(
+                      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                      { maxZoom: 18 }
+                    );
+                    var fallbackLayer = L.tileLayer(
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      { maxZoom: 18 }
+                    );
+                    var switched = false;
+                    primaryLayer.on('tileerror', function () {
+                      if (!switched) {
+                        switched = true;
+                        map.removeLayer(primaryLayer);
+                        fallbackLayer.addTo(map);
+                      }
+                    });
+                    primaryLayer.addTo(map);
                   </script>
                 </body>
                 </html>
